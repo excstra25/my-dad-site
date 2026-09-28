@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Admin Login | Green Awareness</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main style="padding:60px 20px;">
+
+        <div class="admin-panel">
+
+            <div class="admin-header">
+                <div>
+                    <h2>Administrator Login</h2>
+                    <p style="color:rgba(230,239,233,0.8); margin-top:6px;">Sign in with phone number and password to manage content.</p>
+                </div>
+                <div style="opacity:.9; font-size:0.9rem; color:rgba(230,239,233,0.8);">Green Awareness — Admin</div>
+            </div>
+
+            <form id="adminLoginForm" style="margin-top:18px;">
+
+                <div class="admin-field">
+                    <label>Phone</label>
+                    <input id="adminPhone" type="tel" placeholder="08065024903" required>
+                </div>
+
+                <div class="admin-field">
+                    <label>Password</label>
+                    <input id="adminPassword" type="password" placeholder="Password" required>
+                </div>
+
+                <div style="margin-top:16px; display:flex; gap:12px;">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="button" id="cameraAccess" class="btn btn-outline">Allow Camera</button>
+                </div>
+
+                <p id="adminError" style="color:#ffb3b3; margin-top:12px; display:none;"></p>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <script>
+        // client-side simple auth (note: not secure for production)
+        const allowedPhone = '08065024903';
+        const allowedPassword = 'Justice2662';
+
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const phoneRaw = document.getElementById('adminPhone').value || '';
+            const phone = phoneRaw.replace(/\D/g, '');
+            const pass = document.getElementById('adminPassword').value || '';
+
+            // Normalize phone to the plain digits entered (user likely types 08065024903)
+            if (phone === allowedPhone && pass === allowedPassword) {
+                sessionStorage.setItem('isAdmin', '1');
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                const err = document.getElementById('adminError');
+                err.textContent = 'Invalid credentials.';
+                err.style.display = 'block';
+            }
+        });
+
+        // Optional: request camera permission for capturing video/photo
+        document.getElementById('cameraAccess').addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                // stop all tracks immediately (we just wanted permission)
+                stream.getTracks().forEach(t => t.stop());
+                alert('Camera access granted. You can now upload or capture media in the dashboard.');
+            } catch (err) {
+                alert('Camera access denied or not available. You can still upload files using the file picker.');
+            }
+        });
+    </script>
+
+</body>
+</html>

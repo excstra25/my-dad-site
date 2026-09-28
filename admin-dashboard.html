@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Admin Dashboard | Green Awareness</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main style="padding:40px;">
+        <div class="container">
+            <h2>Admin Dashboard</h2>
+            <p style="color:var(--muted);">Upload content to appear in the Users section.</p>
+
+            <div style="margin-top:18px; display:grid; gap:12px; max-width:760px;">
+
+                <label>Title
+                    <input id="postTitle" type="text" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                </label>
+
+                <label>Write-up
+                    <textarea id="postWriteup" rows="6" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;"></textarea>
+                </label>
+
+                <label>Video URL (optional)
+                    <input id="postVideo" type="text" placeholder="https://..." style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                </label>
+
+                <label>Image URL (optional)
+                    <input id="postImage" type="text" placeholder="https://..." style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                </label>
+
+                <div style="display:flex; gap:12px;">
+                    <button id="savePost" class="btn btn-primary">Save Post</button>
+                    <button id="logoutBtn" class="btn btn-outline">Logout</button>
+                </div>
+
+                <p id="postMsg" style="color:var(--muted);"></p>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // protect page
+        if (sessionStorage.getItem('isAdmin') !== '1') {
+            window.location.href = 'admin.html';
+        }
+
+        function loadPosts() {
+            try {
+                const posts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+                return posts;
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function savePosts(posts) {
+            localStorage.setItem('userPosts', JSON.stringify(posts));
+        }
+
+        document.getElementById('savePost').addEventListener('click', () => {
+            const title = document.getElementById('postTitle').value.trim();
+            const writeup = document.getElementById('postWriteup').value.trim();
+            const video = document.getElementById('postVideo').value.trim();
+            const image = document.getElementById('postImage').value.trim();
+
+            if (!title && !writeup && !video && !image) {
+                document.getElementById('postMsg').textContent = 'Please provide some content.';
+                return;
+            }
+
+            const posts = loadPosts();
+            posts.unshift({ id: Date.now(), title, writeup, video, image });
+            savePosts(posts);
+
+            document.getElementById('postMsg').textContent = 'Post saved locally.';
+            // clear fields
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postWriteup').value = '';
+            document.getElementById('postVideo').value = '';
+            document.getElementById('postImage').value = '';
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            sessionStorage.removeItem('isAdmin');
+            window.location.href = 'about.html';
+        });
+
+    </script>
+
+</body>
+</html>
